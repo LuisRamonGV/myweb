@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Portafolio</title>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="#sobre-mi">Sobre mí</a></li>
+            <li><a href="#proyectos">Proyectos</a></li>
+            <li><a href="#redes-sociales">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="sobre-mi">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <div class="profile-container">
+                <img src="profile.jpg" alt="Foto de perfil" class="profile-photo">
+            </div>
+            <h1 class="hero-title">Luis Ramon Garcia Vazquez</h1>
+            <h2 class="hero-subtitle">Ingeniero en sistemas computacionales</h2>
+            <p class="hero-description">
+                Desarrollador Fullstack con experiencia en desarrollo de software, web e inteligencia artificial, 
+                enfocado en análisis de datos y visión por computadora.
+            </p>
+            <div class="hero-buttons">
+                <a href="#proyectos" class="btn-primary">Ver Proyectos</a>
+                <a href="#redes-sociales" class="btn-secondary">Contacto</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="skills">
+        <h2 class="section-title">Habilidades</h2>
+        <div class="carousel-container">
+            <button class="carousel-button prev"><i class="fas fa-chevron-left"></i></button>
+            <div class="carousel">
+                <div class="carousel-item">
+                    <div class="card-header">
+                        <h3><i class="fas fa-code"></i> Frontend</h3>
+                    </div>
+                    <p class="card-description">Desarrollo de interfaces interactivas y dinámicas para usuarios.</p>
+                    <ul class="card-list">
+                        <li><strong>Lenguajes:</strong> JavaScript, HTML, CSS</li>
+                        <li><strong>Frameworks:</strong> Vue.js, React, Nuxt, Tailwind, Bootstrap</li>
+                    </ul>
+                </div>
+                <div class="carousel-item">
+                    <div class="card-header">
+                        <h3><i class="fas fa-server"></i> Backend</h3>
+                    </div>
+                    <p class="card-description">Creación y mantenimiento de servidores, APIs y bases de datos.</p>
+                    <ul class="card-list">
+                        <li><strong>Lenguajes:</strong> JavaScript, Python, Java</li>
+                        <li><strong>Frameworks:</strong> NestJS, Express, Django, SpringBoot</li>
+                    </ul>
+                </div>
+                <div class="carousel-item">
+                    <div class="card-header">
+                        <h3><i class="fas fa-brain"></i> Inteligencia Artificial</h3>
+                    </div>
+                    <p class="card-description">Implementación de modelos y herramientas de IA para análisis y predicción.</p>
+                    <ul class="card-list">
+                        <li><strong>Lenguajes:</strong> Python, C++</li>
+                        <li><strong>Herramientas:</strong> OpenCV, Pandas, NumPy</li>
+                    </ul>
+                </div>
+                <div class="carousel-item">
+                    <div class="card-header">
+                        <h3><i class="fas fa-database"></i> Bases de Datos</h3>
+                    </div>
+                    <p class="card-description">Gestión y diseño de bases de datos relacionales y no relacionales.</p>
+                    <ul class="card-list">
+                        <li><strong>Relacionales:</strong> MySQL, PostgreSQL</li>
+                        <li><strong>No Relacionales:</strong> MongoDB</li>
+                    </ul>
+                </div>
+                <div class="carousel-item">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tools"></i> Herramientas</h3>
+                    </div>
+                    <p class="card-description">Herramientas para desarrollo eficiente y colaborativo.</p>
+                    <ul class="card-list">
+                        <li>Git, GitHub, VSCode, Docker, Linux</li>
+                    </ul>
+                </div>
+            </div>
+            <button class="carousel-button next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <section id="proyectos">
+        <div id="proyectos-container"></div>
+    </section>
+
+    <section id="contacto">
+        <div id="contact-container"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Luis Ramon Garcia Vazquez. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+     function loadSection(targetId, filePath) {
+    return fetch(filePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error al cargar ${filePath}: ${response.status}`)
+            }
+            return response.text()
+        })
+        .then(data => {
+            document.querySelector(targetId).innerHTML = data
+        })
+        .catch(error => console.error(`Error al cargar ${filePath}:`, error))
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([
+        loadSection('#proyectos-container', 'projects.html'),
+        loadSection('#contact-container', 'contact.html')
+    ])
+
+    const carousel = document.querySelector('.carousel')
+    const items = Array.from(document.querySelectorAll('.carousel-item'))
+    const prevButton = document.querySelector('.carousel-button.prev')
+    const nextButton = document.querySelector('.carousel-button.next')
+    const itemWidth = items[0].offsetWidth + 20
+    let scrollPosition = -items.length * itemWidth
+
+    items.forEach(item => {
+        const cloneBefore = item.cloneNode(true)
+        const cloneAfter = item.cloneNode(true)
+        carousel.insertBefore(cloneBefore, carousel.firstChild);
+        carousel.appendChild(cloneAfter)
+    })
+
+    carousel.style.transform = `translateX(${scrollPosition}px)`
+
+    const moveCarousel = (direction) => {
+        scrollPosition += direction * itemWidth;
+        carousel.style.transition = 'transform 0.5s ease-in-out'
+        carousel.style.transform = `translateX(${scrollPosition}px)`
+
+        carousel.addEventListener(
+            'transitionend',
+            () => {
+                if (scrollPosition <= -itemWidth * items.length * 2) {
+                    scrollPosition = -items.length * itemWidth;
+                    carousel.style.transition = 'none'
+                    carousel.style.transform = `translateX(${scrollPosition}px)`
+                }
+                if (scrollPosition >= 0) {
+                    scrollPosition = -items.length * itemWidth * 2
+                    carousel.style.transition = 'none'
+                    carousel.style.transform = `translateX(${scrollPosition}px)`
+                }
+            },
+            { once: true }
+        )
+    }
+
+    prevButton.addEventListener('click', () => moveCarousel(1))
+    nextButton.addEventListener('click', () => moveCarousel(-1))
+
+    const toggleDetails = () => {
+        const toggleButtons = document.querySelectorAll('.toggle-details')
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target')
+                const details = document.querySelector(targetId)
+
+                if (details.style.display === 'none' || !details.style.display) {
+                    details.style.display = 'block'
+                    button.textContent = 'Ocultar'
+                } else {
+                    details.style.display = 'none'
+                    button.textContent = 'Ver'
+                }
+            })
+        })
+    }
+
+    toggleDetails()
+})
+
+    </script>
+</body>
+</html>
